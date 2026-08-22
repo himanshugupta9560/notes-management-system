@@ -27,6 +27,9 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
     private final ObjectMapper objectMapper;
     private final OAuth2Service oAuth2Service;
 
+     @Value("${frontend.redirect.url:http://localhost:5173}")
+    private String frontendRedirectUrl;
+
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
             Authentication authentication) throws IOException, ServletException {
@@ -51,7 +54,13 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 //        response.getWriter().write(objectMapper.writeValueAsString(loginResponseDtoResponseEntity.getBody()));
 
         // this is different thing
-        String redirectUrl = "http://localhost:5173/callback?token=" + loginResponseDtoResponseEntity.getBody().getJwt() + "&id=" + loginResponseDtoResponseEntity.getBody().getId() + "&given_name=" + attributes.get("given_name") + "&picture=" + attributes.get("picture") + "&email=" + attributes.get("email");
+         String redirectUrl = frontendRedirectUrl + "/callback?token=" 
+                + loginResponseDtoResponseEntity.getBody().getJwt() 
+                + "&id=" + loginResponseDtoResponseEntity.getBody().getId() 
+                + "&given_name=" + attributes.get("given_name") 
+                + "&picture=" + attributes.get("picture") 
+                + "&email=" + attributes.get("email");
+        
         response.sendRedirect(redirectUrl);
     }
 }
